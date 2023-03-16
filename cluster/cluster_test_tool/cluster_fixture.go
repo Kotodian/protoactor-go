@@ -8,8 +8,8 @@ import (
 	"github.com/asynkron/protoactor-go/cluster"
 	"github.com/asynkron/protoactor-go/cluster/clusterproviders/test"
 	"github.com/asynkron/protoactor-go/cluster/identitylookup/disthash"
+	"github.com/asynkron/protoactor-go/grpc"
 	"github.com/asynkron/protoactor-go/log"
-	"github.com/asynkron/protoactor-go/remote"
 	"github.com/google/uuid"
 	"golang.org/x/sync/errgroup"
 )
@@ -177,7 +177,7 @@ func (b *BaseClusterFixture) spawnClusterNodes() []*cluster.Cluster {
 // spawnClusterMember spawns a cluster members
 func (b *BaseClusterFixture) spawnClusterMember() *cluster.Cluster {
 	config := cluster.Configure(b.clusterName, b.config.GetClusterProvider(), b.config.GetIdentityLookup(b.clusterName),
-		remote.Configure("localhost", 0),
+		grpc.Configure("localhost", 0),
 		cluster.WithKinds(b.config.GetClusterKinds()...),
 	)
 	config = b.config.Configure(config)
