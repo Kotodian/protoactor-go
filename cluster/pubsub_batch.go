@@ -2,7 +2,7 @@ package cluster
 
 import (
 	"github.com/asynkron/protoactor-go/actor"
-	"github.com/asynkron/protoactor-go/remote"
+	"github.com/asynkron/protoactor-go/grpc"
 )
 
 type PubSubBatch struct {
@@ -10,7 +10,7 @@ type PubSubBatch struct {
 }
 
 // Serialize converts a PubSubBatch to a PubSubBatchTransport.
-func (b *PubSubBatch) Serialize() remote.RootSerialized {
+func (b *PubSubBatch) Serialize() grpc.RootSerialized {
 	batch := &PubSubBatchTransport{
 		TypeNames: make([]string, 0),
 		Envelopes: make([]*PubSubEnvelope, 0),
@@ -18,7 +18,7 @@ func (b *PubSubBatch) Serialize() remote.RootSerialized {
 
 	for _, envelope := range b.Envelopes {
 		var serializerId int32
-		messageData, typeName, err := remote.Serialize(envelope, serializerId)
+		messageData, typeName, err := grpc.Serialize(envelope, serializerId)
 		if err != nil {
 			panic(err)
 		}
@@ -44,13 +44,13 @@ func (b *PubSubBatch) Serialize() remote.RootSerialized {
 }
 
 // Deserialize converts a PubSubBatchTransport to a PubSubBatch.
-func (t *PubSubBatchTransport) Deserialize() remote.RootSerializable {
+func (t *PubSubBatchTransport) Deserialize() grpc.RootSerializable {
 	b := &PubSubBatch{
 		Envelopes: make([]interface{}, 0),
 	}
 
 	for _, envelope := range t.Envelopes {
-		message, err := remote.Deserialize(envelope.MessageData, t.TypeNames[envelope.TypeId], envelope.SerializerId)
+		message, err := grpc.Deserialize(envelope.MessageData, t.TypeNames[envelope.TypeId], envelope.SerializerId)
 		if err != nil {
 			panic(err)
 		}
@@ -65,7 +65,7 @@ type DeliverBatchRequest struct {
 	Topic       string
 }
 
-func (d *DeliverBatchRequest) Serialize() remote.RootSerialized {
+func (d *DeliverBatchRequest) Serialize() grpc.RootSerialized {
 	return &DeliverBatchRequestTransport{
 		Subscribers: d.Subscribers,
 		Batch:       d.PubSubBatch.Serialize().(*PubSubBatchTransport),
@@ -73,7 +73,7 @@ func (d *DeliverBatchRequest) Serialize() remote.RootSerialized {
 	}
 }
 
-func (t *DeliverBatchRequestTransport) Deserialize() remote.RootSerializable {
+func (t *DeliverBatchRequestTransport) Deserialize() grpc.RootSerializable {
 	return &DeliverBatchRequest{
 		Subscribers: t.Subscribers,
 		PubSubBatch: t.Batch.Deserialize().(*PubSubBatch),
@@ -86,7 +86,7 @@ type PubSubAutoRespondBatch struct {
 }
 
 // Serialize converts a PubSubAutoRespondBatch to a PubSubAutoRespondBatchTransport.
-func (b *PubSubAutoRespondBatch) Serialize() remote.RootSerialized {
+func (b *PubSubAutoRespondBatch) Serialize() grpc.RootSerialized {
 	batch := &PubSubBatch{Envelopes: b.Envelopes}
 	transport := batch.Serialize().(*PubSubBatchTransport)
 	return &PubSubAutoRespondBatchTransport{
@@ -108,7 +108,7 @@ func (b *PubSubAutoRespondBatch) GetMessages() []interface{} {
 }
 
 // Deserialize converts a PubSubAutoRespondBatchTransport to a PubSubAutoRespondBatch.
-func (t *PubSubAutoRespondBatchTransport) Deserialize() remote.RootSerializable {
+func (t *PubSubAutoRespondBatchTransport) Deserialize() grpc.RootSerializable {
 	batch := &PubSubBatchTransport{
 		TypeNames: t.TypeNames,
 		Envelopes: t.Envelopes,

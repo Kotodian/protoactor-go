@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.19.1
-// source: remote.proto
+// source: grpc.proto
 
-package remote
+package grpc
 
 import (
 	context "context"

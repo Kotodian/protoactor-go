@@ -9,8 +9,8 @@ import (
 
 	"github.com/asynkron/protoactor-go/actor"
 	"github.com/asynkron/protoactor-go/extensions"
+	"github.com/asynkron/protoactor-go/grpc"
 	"github.com/asynkron/protoactor-go/log"
-	"github.com/asynkron/protoactor-go/remote"
 )
 
 var extensionID = extensions.NextExtensionID()
@@ -20,7 +20,7 @@ type Cluster struct {
 	Config         *Config
 	Gossip         *Gossiper
 	PubSub         *PubSub
-	Remote         *remote.Remote
+	Remote         *grpc.Remote
 	PidCache       *PidCacheValue
 	MemberList     *MemberList
 	IdentityLookup IdentityLookup
@@ -83,7 +83,7 @@ func (c *Cluster) GetBlockedMembers() set.Set[string] {
 
 func (c *Cluster) StartMember() {
 	cfg := c.Config
-	c.Remote = remote.NewRemote(c.ActorSystem, c.Config.RemoteConfig)
+	c.Remote = grpc.NewRemote(c.ActorSystem, c.Config.RemoteConfig)
 
 	c.initKinds()
 
@@ -122,7 +122,7 @@ func (c *Cluster) GetClusterKinds() []string {
 
 func (c *Cluster) StartClient() {
 	cfg := c.Config
-	c.Remote = remote.NewRemote(c.ActorSystem, c.Config.RemoteConfig)
+	c.Remote = grpc.NewRemote(c.ActorSystem, c.Config.RemoteConfig)
 
 	c.Remote.Start()
 
@@ -226,7 +226,7 @@ func (c *Cluster) Call(name string, kind string, msg interface{}, opts ...GrainC
 		pid := c.Get(name, kind)
 
 		if pid == nil {
-			return nil, remote.ErrUnknownError
+			return nil, grpc.ErrUnknownError
 		}
 
 		timeout := callConfig.Timeout
@@ -236,14 +236,14 @@ func (c *Cluster) Call(name string, kind string, msg interface{}, opts ...GrainC
 			lastError = err
 
 			switch err {
-			case actor.ErrTimeout, remote.ErrTimeout:
+			case actor.ErrTimeout, grpc.ErrTimeout:
 				callConfig.RetryAction(i)
 
 				id := ClusterIdentity{Kind: kind, Identity: name}
 				c.PidCache.Remove(id.Identity, id.Kind)
 
 				continue
-			case actor.ErrDeadLetter, remote.ErrDeadLetter:
+			case actor.ErrDeadLetter, grpc.ErrDeadLetter:
 				callConfig.RetryAction(i)
 
 				id := ClusterIdentity{Kind: kind, Identity: name}

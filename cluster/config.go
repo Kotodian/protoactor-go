@@ -6,7 +6,7 @@ import (
 
 	"github.com/asynkron/protoactor-go/actor"
 
-	"github.com/asynkron/protoactor-go/remote"
+	"github.com/asynkron/protoactor-go/grpc"
 )
 
 type Config struct {
@@ -14,7 +14,7 @@ type Config struct {
 	Address                                      string
 	ClusterProvider                              ClusterProvider
 	IdentityLookup                               IdentityLookup
-	RemoteConfig                                 *remote.Config
+	RemoteConfig                                 *grpc.Config
 	RequestTimeoutTime                           time.Duration
 	RequestsLogThrottlePeriod                    time.Duration
 	MaxNumberOfEventsInRequestLogThrottledPeriod int
@@ -30,7 +30,7 @@ type Config struct {
 	PubSubConfig                                 *PubSubConfig
 }
 
-func Configure(clusterName string, clusterProvider ClusterProvider, identityLookup IdentityLookup, remoteConfig *remote.Config, options ...ConfigOption) *Config {
+func Configure(clusterName string, clusterProvider ClusterProvider, identityLookup IdentityLookup, remoteConfig *grpc.Config, options ...ConfigOption) *Config {
 	config := &Config{
 		Name:                      clusterName,
 		ClusterProvider:           clusterProvider,

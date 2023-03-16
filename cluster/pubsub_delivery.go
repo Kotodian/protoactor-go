@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/asynkron/protoactor-go/actor"
+	"github.com/asynkron/protoactor-go/grpc"
 	"github.com/asynkron/protoactor-go/log"
-	"github.com/asynkron/protoactor-go/remote"
 )
 
 var pubsubMemberDeliveryLogThrottle = actor.NewThrottle(10, time.Second, func(i int32) {
@@ -56,10 +56,10 @@ func (p *PubSubMemberDeliveryActor) Receive(c actor.Context) {
 			status := DeliveryStatus_Delivered
 			if err != nil {
 				switch err {
-				case actor.ErrTimeout, remote.ErrTimeout:
+				case actor.ErrTimeout, grpc.ErrTimeout:
 					identityLog(err)
 					status = DeliveryStatus_Timeout
-				case actor.ErrDeadLetter, remote.ErrDeadLetter:
+				case actor.ErrDeadLetter, grpc.ErrDeadLetter:
 					identityLog(err)
 					status = DeliveryStatus_SubscriberNoLongerReachable
 				default:

@@ -11,7 +11,7 @@ import (
 
 	"github.com/asynkron/protoactor-go/actor"
 	"github.com/asynkron/protoactor-go/cluster"
-	"github.com/asynkron/protoactor-go/remote"
+	"github.com/asynkron/protoactor-go/grpc"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,7 +21,7 @@ func newClusterForTest(name string, addr string, cp cluster.ClusterProvider) *cl
 		panic(err)
 	}
 	port, _ := strconv.Atoi(_port)
-	remoteConfig := remote.Configure(host, port)
+	remoteConfig := grpc.Configure(host, port)
 	lookup := disthash.New()
 	config := cluster.Configure(name, cp, lookup, remoteConfig)
 	// return cluster.NewForTest(system, config)
@@ -32,7 +32,7 @@ func newClusterForTest(name string, addr string, cp cluster.ClusterProvider) *cl
 	// use for test without start remote
 	c.ActorSystem.ProcessRegistry.Address = addr
 	c.MemberList = cluster.NewMemberList(c)
-	c.Remote = remote.NewRemote(c.ActorSystem, c.Config.RemoteConfig)
+	c.Remote = grpc.NewRemote(c.ActorSystem, c.Config.RemoteConfig)
 	return c
 }
 

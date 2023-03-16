@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/asynkron/protoactor-go/remote"
+	"github.com/asynkron/protoactor-go/grpc"
 
 	"github.com/asynkron/gofun/set"
 	"google.golang.org/protobuf/proto"
@@ -256,7 +256,7 @@ func (g *Gossiper) blockExpiredHeartbeats() {
 		return
 	}
 
-	blockList := remote.GetRemote(g.cluster.ActorSystem).BlockList()
+	blockList := grpc.GetRemote(g.cluster.ActorSystem).BlockList()
 
 	blocked := make([]string, 0)
 
@@ -282,7 +282,7 @@ func (g *Gossiper) blockGracefullyLeft() {
 		return
 	}
 
-	blockList := remote.GetRemote(g.cluster.ActorSystem).BlockList()
+	blockList := grpc.GetRemote(g.cluster.ActorSystem).BlockList()
 
 	gracefullyLeft := make([]string, 0)
 	for k := range t {

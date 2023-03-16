@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/asynkron/protoactor-go/actor"
+	"github.com/asynkron/protoactor-go/grpc"
 	"github.com/asynkron/protoactor-go/log"
-	"github.com/asynkron/protoactor-go/remote"
 )
 
 // Defines a type to provide DefaultContext configurations / implementations.
@@ -77,7 +77,7 @@ selectloop:
 			if err != nil {
 				plog.Error("cluster.RequestFuture failed", log.Error(err), log.PID("pid", pid))
 				switch err {
-				case actor.ErrTimeout, remote.ErrTimeout, actor.ErrDeadLetter, remote.ErrDeadLetter:
+				case actor.ErrTimeout, grpc.ErrTimeout, actor.ErrDeadLetter, grpc.ErrDeadLetter:
 					counter = cfg.RetryAction(counter)
 					dcc.cluster.PidCache.Remove(identity, kind)
 					err = nil // reset our error variable as we can succeed still

@@ -8,8 +8,8 @@ import (
 	"github.com/asynkron/protoactor-go/actor"
 	"github.com/asynkron/protoactor-go/cluster"
 	"github.com/asynkron/protoactor-go/cluster/identitylookup/disthash"
+	"github.com/asynkron/protoactor-go/grpc"
 	"github.com/asynkron/protoactor-go/log"
-	"github.com/asynkron/protoactor-go/remote"
 	"github.com/stretchr/testify/suite"
 )
 
@@ -39,7 +39,7 @@ func (self *ClusterAndSystem) Shutdown() {
 
 func (suite *ZookeeperTestSuite) start(name string, opts ...cluster.ConfigOption) *ClusterAndSystem {
 	cp, _ := New([]string{`localhost:8000`})
-	remoteConfig := remote.Configure("localhost", 0)
+	remoteConfig := grpc.Configure("localhost", 0)
 	config := cluster.Configure(name, cp, disthash.New(), remoteConfig, opts...)
 	system := actor.NewActorSystem()
 	c := cluster.New(system, config)

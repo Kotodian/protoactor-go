@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.27.1
 // 	protoc        v3.19.1
-// source: remote.proto
+// source: grpc.proto
 
-package remote
+package grpc
 
 import (
 	actor "github.com/asynkron/protoactor-go/actor"

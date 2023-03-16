@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/asynkron/protoactor-go/actor"
-	"github.com/asynkron/protoactor-go/remote"
+	"github.com/asynkron/protoactor-go/grpc"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -106,12 +106,12 @@ func (lu *fakeIdentityLookup) Shutdown() {
 func newClusterForTest(name string, cp ClusterProvider, opts ...ConfigOption) *Cluster {
 	system := actor.NewActorSystem()
 	lookup := fakeIdentityLookup{}
-	cfg := Configure(name, cp, &lookup, remote.Configure("127.0.0.1", 0), opts...)
+	cfg := Configure(name, cp, &lookup, grpc.Configure("127.0.0.1", 0), opts...)
 	c := New(system, cfg)
 
 	c.MemberList = NewMemberList(c)
 	c.Config.RequestTimeoutTime = 1 * time.Second
-	c.Remote = remote.NewRemote(system, c.Config.RemoteConfig)
+	c.Remote = grpc.NewRemote(system, c.Config.RemoteConfig)
 	return c
 }
 
@@ -132,7 +132,7 @@ func TestCluster_Call(t *testing.T) {
 	t.Run("invalid kind", func(t *testing.T) {
 		msg := struct{}{}
 		resp, err := c.Request("name", "nonkind", &msg)
-		assert.Equal(remote.ErrUnAvailable, err)
+		assert.Equal(grpc.ErrUnAvailable, err)
 		assert.Nil(resp)
 	})
 

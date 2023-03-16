@@ -6,8 +6,8 @@ import (
 
 	"github.com/asynkron/protoactor-go/actor"
 	"github.com/asynkron/protoactor-go/eventstream"
+	"github.com/asynkron/protoactor-go/grpc"
 	"github.com/asynkron/protoactor-go/log"
-	"github.com/asynkron/protoactor-go/remote"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
@@ -219,7 +219,7 @@ func (ml *MemberList) getTopologyChanges(members Members) (topology *ClusterTopo
 
 func (ml *MemberList) TerminateMember(m *Member) {
 	// tell the world that this endpoint should is no longer relevant
-	ml.cluster.ActorSystem.EventStream.Publish(&remote.EndpointTerminatedEvent{
+	ml.cluster.ActorSystem.EventStream.Publish(&grpc.EndpointTerminatedEvent{
 		Address: m.Address(),
 	})
 }

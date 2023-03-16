@@ -1,4 +1,4 @@
-package remote
+package grpc
 
 import (
 	"github.com/asynkron/protoactor-go/actor"
