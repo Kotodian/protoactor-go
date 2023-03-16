@@ -8,7 +8,7 @@ import (
 
 	"github.com/asynkron/protoactor-go/actor"
 	"github.com/asynkron/protoactor-go/cluster"
-	"github.com/asynkron/protoactor-go/remote"
+	"github.com/asynkron/protoactor-go/grpc"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,7 +32,7 @@ func startNode() *cluster.Cluster {
 	system := actor.NewActorSystem()
 
 	provider := New()
-	config := remote.Configure("localhost", 0)
+	config := grpc.Configure("localhost", 0)
 
 	lookup := disthash.New()
 	clusterConfig := cluster.Configure("my-cluster", provider, lookup, config)
